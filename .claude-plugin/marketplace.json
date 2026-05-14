@@ -1,0 +1,20 @@
+{
+  "name": "claude-code-thread",
+  "owner": {
+    "name": "erikt",
+    "email": "entouss@gmail.com"
+  },
+  "metadata": {
+    "description": "Long-term memory (thread) plugin for Claude Code — persist context across sessions in ~/.claude/_thread/",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "thread",
+      "source": "./",
+      "description": "Persist context across sessions in named threads. Store summaries, decisions, and notes in ~/.claude/_thread/ and reload them in any future session.",
+      "category": "memory",
+      "tags": ["memory", "thread", "context", "persistence", "long-term-memory"]
+    }
+  ]
+}

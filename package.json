@@ -1,0 +1,14 @@
+{
+  "name": "claude-code-thread",
+  "version": "0.1.0",
+  "description": "Long-term memory (thread) plugin for Claude Code — persist context across sessions",
+  "files": [
+    "commands/",
+    ".claude-plugin/"
+  ],
+  "keywords": ["claude-code", "memory", "thread", "context", "persistence"],
+  "author": "erikt",
+  "license": "MIT",
+  "homepage": "https://github.com/erikt/claude-code-thread",
+  "repository": "https://github.com/erikt/claude-code-thread"
+}
