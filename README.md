@@ -46,12 +46,7 @@ Each thread lives at `~/.claude/_thread/<name>/`:
 
 ## Installation
 
-### Local (development)
-
-The plugin is registered by pointing Claude Code's plugin registry at this directory. See `~/.claude/plugins/installed_plugins.json`.
-
-### From GitHub (future)
-
 ```
-/plugin install thread@<marketplace>
+/plugin marketplace add entouss/claude-code-thread
+/plugin install thread@claude-code-thread
 ```
