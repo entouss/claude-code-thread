@@ -6,6 +6,9 @@
     "name": "erikt",
     "url": "https://github.com/erikt"
   },
+  "skills": [
+    "./skills/text-to-diagram/SKILL.md"
+  ],
   "commands": [
     "./commands/create.md",
     "./commands/load.md",
