@@ -57,8 +57,7 @@ Then write `$THREAD_DIR/thread.html` with this exact content (substituting `<nam
       color: #e2e8f0;
       line-height: 1.6;
       padding: 2rem;
-      max-width: 860px;
-      margin: 0 auto;
+      margin: 0;
     }
     header {
       border-bottom: 1px solid #2d3748;
