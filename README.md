@@ -1,5 +1,7 @@
 # claude-code-thread
 
+🧵
+
 A Claude Code plugin for long-term memory across sessions. Store context, decisions, and notes in named **threads** that persist in `~/.claude/_thread/`.
 
 ## Commands

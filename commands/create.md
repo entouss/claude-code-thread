@@ -48,6 +48,7 @@ Then write `$THREAD_DIR/thread.html` with this exact content (substituting `<nam
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thread: <name></title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧵</text></svg>">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -105,7 +106,7 @@ Then write `$THREAD_DIR/thread.html` with this exact content (substituting `<nam
 </html>
 ```
 
-Use the Bash tool to write this file (use a heredoc or printf). Substitute `<name>` with the actual thread name and `<created-date>` with today's date in ISO 8601 format (YYYY-MM-DD).
+Use the Bash tool to write this file (use a heredoc or printf). Substitute `<name>` with the actual thread name and `<created-date>` with today's date in ISO 8601 format (YYYY-MM-DD). The logo and favicon are embedded as base64 data URIs — no external files needed.
 
 ## Step 4 — Set active thread
 
