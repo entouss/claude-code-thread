@@ -7,15 +7,39 @@ Open `~/.claude/_thread/<name>/` in the system file manager.
 
 ## Step 1 — Resolve thread name
 
-If a name was passed as an argument, use it. Otherwise:
+Run this script to resolve the thread name:
 
-1. Check for an active thread:
-   ```bash
-   cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread/.active" 2>/dev/null || echo "NONE"
-   ```
-2. If an active thread name is found and its directory exists, use it automatically without prompting.
-3. Otherwise list available threads and ask the user which to open (use AskUserQuestion with thread names as options).
-4. If no threads exist at all, tell the user to create one with `/thread:create` and stop.
+```bash
+THREAD_ROOT="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread"
+REQUESTED=""  # replace with argument if provided
+
+THREADS=$(find "$THREAD_ROOT" -mindepth 1 -maxdepth 1 -type d 2>/dev/null \
+  | xargs -I{} basename {} | grep -v '^\.' | sort)
+ACTIVE=$(cat "$THREAD_ROOT/.active" 2>/dev/null || true)
+
+if [ -n "$REQUESTED" ]; then
+  if [ -d "$THREAD_ROOT/$REQUESTED" ]; then
+    echo "RESOLVED=$REQUESTED"
+  else
+    MATCHES=$(echo "$THREADS" | grep -i "$REQUESTED" 2>/dev/null || true)
+    COUNT=$(echo "$MATCHES" | grep -c . 2>/dev/null || echo 0)
+    if [ "$COUNT" -eq 1 ]; then echo "RESOLVED=$MATCHES"
+    elif [ "$COUNT" -gt 1 ]; then echo "RESOLVED=AMBIGUOUS"; echo "$MATCHES"
+    else echo "RESOLVED=MISSING"
+    fi
+  fi
+elif [ -n "$ACTIVE" ] && [ -d "$THREAD_ROOT/$ACTIVE" ]; then
+  echo "RESOLVED=$ACTIVE"
+else
+  echo "RESOLVED=PROMPT"; echo "$THREADS"
+fi
+```
+
+- `RESOLVED=<name>` — use it directly.
+- `RESOLVED=AMBIGUOUS` + list — show `AskUserQuestion` with only the listed matches.
+- `RESOLVED=PROMPT` + list — show `AskUserQuestion` with all threads.
+- `RESOLVED=MISSING` — tell the user no match was found and suggest `/thread:list`. Stop.
+- Empty `THREADS` — tell the user no threads exist and suggest `/thread:create`. Stop.
 
 ## Step 2 — Verify the folder exists
 

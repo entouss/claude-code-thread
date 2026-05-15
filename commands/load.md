@@ -24,7 +24,17 @@ if [ -n "$REQUESTED" ]; then
     echo "RESOLVED=$REQUESTED"
     find "$THREAD_ROOT/$REQUESTED" -type f | sort | sed "s|$THREAD_ROOT/$REQUESTED/||"
   else
-    echo "RESOLVED=MISSING"
+    MATCHES=$(echo "$THREADS" | grep -i "$REQUESTED" 2>/dev/null || true)
+    COUNT=$(echo "$MATCHES" | grep -c . 2>/dev/null || echo 0)
+    if [ "$COUNT" -eq 1 ]; then
+      echo "RESOLVED=$MATCHES"
+      find "$THREAD_ROOT/$MATCHES" -type f | sort | sed "s|$THREAD_ROOT/$MATCHES/||"
+    elif [ "$COUNT" -gt 1 ]; then
+      echo "RESOLVED=AMBIGUOUS"
+      echo "$MATCHES"
+    else
+      echo "RESOLVED=MISSING"
+    fi
   fi
 else
   echo "RESOLVED=PROMPT"
@@ -32,23 +42,26 @@ fi
 ```
 
 Parse the output:
-- If `RESOLVED=<name>`: thread is confirmed, the remaining lines are the relative file paths — proceed to Step 3.
-- If `RESOLVED=PROMPT`: show `AskUserQuestion` with the `THREADS` list, then run a minimal verification:
-  ```bash
-  THREAD_ROOT="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread"
-  TARGET="<chosen>"
-  [ -d "$THREAD_ROOT/$TARGET" ] && find "$THREAD_ROOT/$TARGET" -type f | sort | sed "s|$THREAD_ROOT/$TARGET/||" || echo "MISSING"
-  ```
-- If `RESOLVED=MISSING`: tell the user the thread was not found and suggest `/thread:list`. Stop.
+- If `RESOLVED=<name>`: exact or single partial match confirmed — remaining lines are file paths, proceed to Step 3.
+- If `RESOLVED=AMBIGUOUS`: multiple partial matches — show `AskUserQuestion` with only the listed matches, then run minimal verification on the chosen name.
+- If `RESOLVED=PROMPT`: no argument — show `AskUserQuestion` with the full `THREADS` list, then run minimal verification.
+- If `RESOLVED=MISSING`: no match found — tell the user and suggest `/thread:list`. Stop.
 - If `THREADS` is empty: tell the user no threads exist yet and suggest `/thread:create`. Stop.
 
-## Step 2 — AskUserQuestion (only if RESOLVED=PROMPT)
+Minimal verification (run after picker):
+```bash
+THREAD_ROOT="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread"
+TARGET="<chosen>"
+[ -d "$THREAD_ROOT/$TARGET" ] && find "$THREAD_ROOT/$TARGET" -type f | sort | sed "s|$THREAD_ROOT/$TARGET/||" || echo "MISSING"
+```
+
+## Step 2 — AskUserQuestion (only if RESOLVED=PROMPT or AMBIGUOUS)
 
 ```
 AskUserQuestion:
   question: "Which thread do you want to load?"
   header: "Thread"
-  options: [one option per name in THREADS]
+  options: [matched threads if AMBIGUOUS, all threads if PROMPT]
   multiSelect: false
 ```
 

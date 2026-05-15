@@ -7,14 +7,36 @@ Permanently delete a thread from `~/.claude/_thread/<name>/`.
 
 ## Step 1 — Resolve thread name
 
-If a name was passed as an argument, use it. Otherwise:
+Run this script to resolve the thread name:
 
-1. List available threads:
-   ```bash
-   ls -1 "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread" 2>/dev/null || echo "NONE"
-   ```
-2. If none exist, tell the user and stop.
-3. Otherwise ask the user which thread to delete (use AskUserQuestion with thread names as options).
+```bash
+THREAD_ROOT="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread"
+REQUESTED=""  # replace with argument if provided
+
+THREADS=$(find "$THREAD_ROOT" -mindepth 1 -maxdepth 1 -type d 2>/dev/null \
+  | xargs -I{} basename {} | grep -v '^\.' | sort)
+
+if [ -n "$REQUESTED" ]; then
+  if [ -d "$THREAD_ROOT/$REQUESTED" ]; then
+    echo "RESOLVED=$REQUESTED"
+  else
+    MATCHES=$(echo "$THREADS" | grep -i "$REQUESTED" 2>/dev/null || true)
+    COUNT=$(echo "$MATCHES" | grep -c . 2>/dev/null || echo 0)
+    if [ "$COUNT" -eq 1 ]; then echo "RESOLVED=$MATCHES"
+    elif [ "$COUNT" -gt 1 ]; then echo "RESOLVED=AMBIGUOUS"; echo "$MATCHES"
+    else echo "RESOLVED=MISSING"
+    fi
+  fi
+else
+  echo "RESOLVED=PROMPT"; echo "$THREADS"
+fi
+```
+
+- `RESOLVED=<name>` — use it directly.
+- `RESOLVED=AMBIGUOUS` + list — show `AskUserQuestion` with only the listed matches.
+- `RESOLVED=PROMPT` + list — show `AskUserQuestion` with all threads.
+- `RESOLVED=MISSING` — tell the user no match was found and suggest `/thread:list`. Stop.
+- Empty `THREADS` — tell the user no threads exist and stop.
 
 ## Step 2 — Count files and confirm
 
