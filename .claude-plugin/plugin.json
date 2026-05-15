@@ -12,7 +12,10 @@
     "./commands/list.md",
     "./commands/delete.md",
     "./commands/browse.md",
-    "./commands/save.md"
+    "./commands/save.md",
+    "./commands/folder.md",
+    "./commands/search.md",
+    "./commands/rename.md"
   ],
   "homepage": "https://github.com/erikt/claude-code-thread",
   "repository": "https://github.com/erikt/claude-code-thread",

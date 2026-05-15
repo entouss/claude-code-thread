@@ -9,12 +9,13 @@ Open `~/.claude/_thread/<name>/thread.html` in the system's default browser.
 
 If a name was passed as an argument, use it. Otherwise:
 
-1. List available threads:
+1. Check for an active thread:
    ```bash
-   ls -1 "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread" 2>/dev/null || echo "NONE"
+   cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread/.active" 2>/dev/null || echo "NONE"
    ```
-2. If none exist, tell the user to create one with `/thread:create` and stop.
-3. Otherwise ask the user which thread to browse (use AskUserQuestion with thread names as options).
+2. If an active thread name is found and its `thread.html` exists, use it automatically without prompting.
+3. Otherwise list available threads and ask the user which to browse (use AskUserQuestion with thread names as options).
+4. If no threads exist at all, tell the user to create one with `/thread:create` and stop.
 
 ## Step 2 — Verify file exists
 

@@ -101,47 +101,21 @@ Then write `$THREAD_DIR/thread.html` with this exact content (substituting `<nam
       Last saved: <time id="updated"><created-date></time>
     </div>
   </header>
-
-  <section id="summary">
-    <h2>Summary</h2>
-    <p class="empty">No summary yet.</p>
-  </section>
-
-  <section id="goals">
-    <h2>Goals &amp; Objectives</h2>
-    <ul class="empty-list">
-      <li class="empty">No goals recorded yet.</li>
-    </ul>
-  </section>
-
-  <section id="context">
-    <h2>Key Context</h2>
-    <ul class="empty-list">
-      <li class="empty">No context recorded yet.</li>
-    </ul>
-  </section>
-
-  <section id="decisions">
-    <h2>Decisions</h2>
-    <div class="empty">No decisions recorded yet.</div>
-  </section>
-
-  <section id="entries">
-    <h2>Session Entries</h2>
-    <div class="empty">No session entries yet.</div>
-  </section>
-
-  <section id="notes">
-    <h2>Notes</h2>
-    <div class="empty">No notes yet.</div>
-  </section>
 </body>
 </html>
 ```
 
 Use the Bash tool to write this file (use a heredoc or printf). Substitute `<name>` with the actual thread name and `<created-date>` with today's date in ISO 8601 format (YYYY-MM-DD).
 
-## Step 4 — Confirm
+## Step 4 — Set active thread
+
+Write the new thread name to `~/.claude/_thread/.active` so other commands treat it as the current thread:
+
+```bash
+echo "<name>" > "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread/.active"
+```
+
+## Step 5 — Confirm
 
 Tell the user:
 

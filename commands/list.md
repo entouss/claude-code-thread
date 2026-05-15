@@ -1,47 +1,64 @@
 ---
-description: List all available threads
-allowed-tools: Bash
+description: List and select a thread to act on
+allowed-tools: Bash, AskUserQuestion
 ---
 
-List all threads stored in `~/.claude/_thread/`.
+Show all threads as an interactive picker and perform an action on the selected one.
 
-## Step 1 — Find threads
+## Step 1 — Gather threads
 
 ```bash
 THREAD_ROOT="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/_thread"
-if [ ! -d "$THREAD_ROOT" ]; then
-  echo "NO_THREADS_DIR"
-else
-  for dir in "$THREAD_ROOT"/*/; do
-    [ -d "$dir" ] || continue
-    name=$(basename "$dir")
-    html="$dir/thread.html"
-    if [ -f "$html" ]; then
-      updated=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$html" 2>/dev/null || stat -c "%y" "$html" 2>/dev/null | cut -c1-16)
-      size=$(wc -c < "$html" | tr -d ' ')
-      extras=$(find "$dir" -type f -not -name "thread.html" | wc -l | tr -d ' ')
-      echo "THREAD|$name|$updated|$size|$extras"
-    else
-      echo "THREAD_NO_HTML|$name"
-    fi
-  done
-fi
+ACTIVE=$(cat "$THREAD_ROOT/.active" 2>/dev/null || echo "")
+for dir in "$THREAD_ROOT"/*/; do
+  [ -d "$dir" ] || continue
+  name=$(basename "$dir")
+  [ "$name" = ".active" ] && continue
+  updated=$(stat -f "%Sm" -t "%Y-%m-%d" "$dir/thread.html" 2>/dev/null \
+            || stat -c "%y" "$dir/thread.html" 2>/dev/null | cut -c1-10 \
+            || echo "unknown")
+  active_marker=""
+  [ "$name" = "$ACTIVE" ] && active_marker=" (active)"
+  echo "$name|$updated|$active_marker"
+done
 ```
 
-## Step 2 — Display
+If the `_thread` directory doesn't exist or no threads are found, tell the user no threads exist yet and suggest `/thread:create`. Stop.
 
-If no threads directory or no results, tell the user no threads exist yet and suggest `/thread:create`.
+## Step 2 — Present picker
 
-Otherwise present a clean table:
+Build one option per thread. Label: thread name (append ` ·  active` if it matches `.active`). Description: `Last saved: <date>`.
+
+Add a final option: `Cancel` — description: `Do nothing`.
 
 ```
-Threads (n total)
-─────────────────────────────────────────────────────
-  NAME            LAST SAVED          FILES   SIZE
-  my-project      2026-05-14 09:31    1       4.2 KB
-  research        2026-05-10 17:05    3       8.1 KB
-─────────────────────────────────────────────────────
-Use /thread:load <name> to load a thread into context.
+AskUserQuestion:
+  question: "Select a thread:"
+  header: "Threads"
+  options: [one per thread, plus Cancel]
+  multiSelect: false
 ```
 
-Count the `extras` column (non-thread.html files) and add 1 for thread.html to get total FILES. Format `size` in human-readable KB (divide bytes by 1024, one decimal place).
+## Step 3 — Act on selection
+
+If the user picks **Cancel** (or dismisses), stop silently.
+
+Otherwise ask what to do with the selected thread:
+
+```
+AskUserQuestion:
+  question: "What do you want to do with '<name>'?"
+  header: "Action"
+  options:
+    - label: "Load"    description: "Read all files into context and summarize"
+    - label: "Save"    description: "Write current session context into this thread"
+    - label: "Browse"  description: "Open thread.html in the browser"
+    - label: "Folder"  description: "Open the thread folder in Finder"
+  multiSelect: false
+```
+
+Execute the chosen action exactly as the corresponding command would:
+- **Load** → follow all steps in `load.md`, using `<name>` as the resolved thread
+- **Save** → follow all steps in `save.md`, using `<name>` as the resolved thread
+- **Browse** → follow all steps in `browse.md`, using `<name>` as the resolved thread
+- **Folder** → follow all steps in `folder.md`, using `<name>` as the resolved thread
