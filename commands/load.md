@@ -56,7 +56,7 @@ Then run the minimal verification script above with the chosen name.
 
 ## Step 3 — Read all files
 
-Using the file list from Step 1, read each file with the Read tool. For `thread.html`, extract human-readable text from each `<section>`. For other files, read as-is.
+Using the file list from Step 1, read each file with the Read tool. For `thread.html`, extract the human-readable content from the body. For other files, read as-is.
 
 ## Step 4 — Finalise in one script
 
@@ -68,7 +68,6 @@ TARGET="<name>"
 HTML="$THREAD_ROOT/$TARGET/thread.html"
 TODAY=$(date +%Y-%m-%d)
 
-# Update <time id="updated"> and write .active atomically
 sed -i.bak "s|<time id=\"updated\">[^<]*</time>|<time id=\"updated\">$TODAY</time>|" "$HTML" \
   && rm -f "$HTML.bak"
 echo "$TARGET" > "$THREAD_ROOT/.active"
@@ -77,37 +76,9 @@ echo "DONE"
 
 ## Step 5 — Output summary
 
-Print a structured summary to the user:
+Present the thread content to the user in a clear, natural way — following whatever structure is already in the thread. Don't impose a fixed format; let the thread's own organization guide the output. Note any other files alongside `thread.html`. End with:
 
 ```
-─────────────────────────────────────────────
-  Thread loaded: <name>
-  Files read: N
-─────────────────────────────────────────────
-
-**Summary**
-<content of #summary section, or "none recorded">
-
-**Goals & Objectives**
-<bulleted list from #goals, or "none recorded">
-
-**Key Context**
-<bulleted list from #context, or "none recorded">
-
-**Decisions**
-<content of #decisions, or "none recorded">
-
-**Session Entries** (most recent 3)
-<last 3 .entry divs, or "none recorded">
-
-**Notes**
-<content of #notes, or "none recorded">
-
-**Other files**
-<list any non-thread.html files with a one-line description>
-─────────────────────────────────────────────
 All thread content is now in context.
 Use /thread:save to write new context back to this thread.
 ```
-
-If a section contains only the `.empty` placeholder text, show "none recorded" instead.

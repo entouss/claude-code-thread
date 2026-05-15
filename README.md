@@ -22,11 +22,11 @@ Each thread lives at `~/.claude/_thread/<name>/`:
 ```
 ~/.claude/_thread/
   my-project/
-    thread.html      ← structured HTML memory store (human-readable)
+    thread.html      ← HTML memory store (human-readable, dark-mode)
     notes.md         ← any extra files you add manually
 ```
 
-`thread.html` is a styled dark-mode HTML file with sections for Summary, Goals, Key Context, Decisions, Session Entries, and Notes. Open it in any browser via `/thread:browse`.
+`thread.html` is a styled dark-mode HTML file. Claude decides what to store and how to organize it — no fixed sections. Open it in any browser via `/thread:browse`.
 
 ## Workflow
 
