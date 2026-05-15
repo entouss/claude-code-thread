@@ -77,6 +77,14 @@ Then write `$THREAD_DIR/thread.html` with this exact content (substituting `<nam
       padding-bottom: 0.4rem;
       margin-bottom: 1rem;
     }
+    h2 .anchor {
+      color: #4a5568;
+      text-decoration: none;
+      margin-right: 0.4em;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    h2:hover .anchor { opacity: 1; }
     .empty { color: #4a5568; font-style: italic; font-size: 0.9rem; }
     ul { padding-left: 1.2rem; }
     li { margin-bottom: 0.4rem; }

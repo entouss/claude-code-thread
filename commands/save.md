@@ -49,7 +49,18 @@ Read `$THREAD_DIR/thread.html` using the Read tool to understand what is already
 
 Review the current conversation and use your judgment to decide what context would be valuable for a future session. Don't follow a fixed template — structure the content however makes sense for this thread. Things that are often worth capturing: what was worked on, what was learned or decided, open questions, key facts a future session would otherwise have to re-derive. Omit anything ephemeral or obvious.
 
-Merge new content with what's already in the thread. Don't erase prior content unless it's been superseded. Use `<section>` elements with `<h2>` headings to organize content. Update the `<time id="updated">` timestamp to today's date (YYYY-MM-DD).
+Merge new content with what's already in the thread. Don't erase prior content unless it's been superseded. Update the `<time id="updated">` timestamp to today's date (YYYY-MM-DD).
+
+Each section must use this structure so headings have link anchors:
+
+```html
+<section id="slug">
+  <h2><a class="anchor" href="#slug">#</a> Title</h2>
+  ...content...
+</section>
+```
+
+Derive `slug` from the heading title (lowercase, spaces to hyphens, e.g. `key-decisions`). Existing sections that already have this structure should be preserved as-is; only add the anchor if it's missing.
 
 ## Step 5 — Confirm
 
